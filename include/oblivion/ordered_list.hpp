@@ -15,11 +15,11 @@ private:
 
   struct Block {
     size_t begin;
-    size_t end;
+    size_t size;
     unsigned int depth;
 
-    void extend_left();
-    void extend_right(const size_t &max_index);
+    Block parent() const;
+    Block sibling() const;
   };
 
   unsigned long count_elements(const Block &blk) const;
@@ -27,17 +27,27 @@ private:
   double lower_limit(const Block &blk) const;
   double density(const Block &blk) const;
 
+  std::optional<size_t> binary_search(const int &x, const size_t &begin,
+                                      const size_t &end) const;
+  std::optional<size_t> suc_idx(const int &x, const size_t &begin,
+                                const size_t &end) const;
+
+  void expand_vector();
+  void shrink_vector();
+
 public:
   OrderedList();
   size_t size() const;
   // void include(int x);
-  // void remove(int x);
-  // int successor(int x) const;
-  //
+  // void erase(int x);
+  std::optional<int> successor(const int &x) const;
+
   // TODO:
+  // - distribute the elements of o block when density is violated
   // - double and shrink vector in meters of blocks (mantain blocks of size
   // O(lg(n)) where n elements can fit)
-  // - binary search method (required to include, remove and successor)
+  // - think if the way im recursevely dividing the blocks (maybe i should use
+  // tree like operations where the bloks are nodes) (MAYBE NOT!!)
 };
 } // namespace oblivion
 
