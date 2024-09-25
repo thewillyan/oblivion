@@ -18,40 +18,16 @@ endif()
 include_directories(include)
 include_directories(lib)
 
-# add executable
+# create library "Oblivion"
+file(GLOB_RECURSE
+    OBLIVION_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/oblivion/*.hpp" "${CMAKE_SOURCE_DIR}/src/oblivion/*.cpp")
+add_library(Oblivion ${OBLIVION_SOURCES})
+
+# add main executable
 add_executable(oblivion-cli "${CMAKE_SOURCE_DIR}/exe/main.cpp")
-# target_link_libraries(oblivion-cli PUBLIC Chronista)
+target_link_libraries(oblivion-cli PUBLIC Oblivion)
 add_custom_target(run
     COMMAND ./oblivion-cli
     DEPENDS oblivion-cli
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
-
-# create library "Chronista"
-#file(GLOB_RECURSE
-#    CHRONISTA_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/chronista/*.hpp" "${CMAKE_SOURCE_DIR}/src/chronista/*.cpp")
-#add_library(Chronista ${CHRONISTA_SOURCES})
-#
-## add main executable
-#add_executable(chronista_cli "${CMAKE_SOURCE_DIR}/exe/main.cpp")
-#target_link_libraries(chronista_cli PUBLIC Chronista)
-#add_custom_target(run
-#    COMMAND ./chronista_cli
-#    DEPENDS chronista_cli
-#    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-#)
-#
-## link test library
-#add_library(doctest INTERFACE)
-#target_include_directories(doctest INTERFACE "${CMAKE_SOURCE_DIR}/lib/doctest")
-#
-## setup tests
-#enable_testing()
-#
-#file(GLOB_RECURSE
-#    TEST_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/chronista/*.cpp")
-#add_executable(chronista_tests "${CMAKE_SOURCE_DIR}/tests/main.cpp" "${TEST_FILES}")
-#target_compile_features(chronista_tests PRIVATE cxx_std_17)
-#target_link_libraries(chronista_tests PRIVATE doctest Chronista)
-#
-#add_test(NAME ChronistaTests COMMAND chronista_tests)
