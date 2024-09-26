@@ -2,6 +2,7 @@
 #define OBLIVION_ORDERED_LIST
 
 #include <optional>
+#include <ostream>
 #include <vector>
 
 namespace oblivion {
@@ -45,16 +46,25 @@ private:
 public:
   OrderedList();
   size_t size() const;
-  // void include(int x);
-  // void erase(int x);
+  void include(int x); // TODO!
+  void erase(int x);   // TODO!
   std::optional<int> successor(const int &x) const;
 
+  friend std::ostream &operator<<(std::ostream &os, const OrderedList &obj);
+
   // TODO:
-  // - implement functions (expand and shrink) to adjust the blocks to the size
-  // to O(lg(n)). Consider using block_size = floor(lg(n)) + 1.
-  // - distribute the elements of o block when density is violated (inclusion
-  // and remotion)
+  //
+  // - Consider using block_size = floor(lg(n)) + 1.
+  // - Every time we need to update the block size remember to distribute ALL
+  // the elements after it (investigate if there is case that this is
+  // unecessary).
+  // - distribute the elements of the block when density is violated (inclusion
+  // and remotion). Rebember to distribute it in a parent block where the
+  // violation does not happen. If cant be distributed, double the vector.
+  // - Implement iterator.
+  // - Implement operator<<.
 };
+
 } // namespace oblivion
 
 #endif
