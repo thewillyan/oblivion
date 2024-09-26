@@ -11,6 +11,7 @@ private:
   std::vector<std::optional<int>> v;
   size_t block_size;
   unsigned int tree_height;
+  size_t nitems;
 
   struct Block {
     size_t begin;
@@ -33,6 +34,12 @@ private:
 
   void table_doubling();
   void table_halving();
+
+  // Expand block size by one.
+  void expand_blocks();
+  // Shrik the block size by one.
+  void shrink_blocks();
+
   void distribute(const Block &blk);
 
 public:

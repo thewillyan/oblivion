@@ -1,13 +1,13 @@
 #include "oblivion/ordered_list.hpp"
 #include <algorithm>
-#include <math.h>
 #include <stdexcept>
 
 using namespace oblivion;
 
 // constructors
 OrderedList::OrderedList()
-    : v{std::vector<std::optional<int>>()}, block_size{0}, tree_height{0} {}
+    : v{std::vector<std::optional<int>>()}, block_size{0}, tree_height{0},
+      nitems{0} {}
 
 // block
 OrderedList::Block OrderedList::Block::parent() const {
@@ -33,7 +33,7 @@ OrderedList::Block OrderedList::Block::sibling() const {
 }
 
 // methods
-size_t OrderedList::size() const { return v.size(); }
+size_t OrderedList::size() const { return nitems; }
 
 unsigned long OrderedList::count_elements(const Block &blk) const {
   unsigned long count = 0;
@@ -184,4 +184,20 @@ void OrderedList::distribute(const Block &blk) {
       ++i;
     }
   }
+}
+
+// Expand block size by one.
+void OrderedList::expand_blocks() {
+  size_t nblocks = v.size() / block_size;
+  size_t new_vec_size = nblocks * (block_size + 1);
+  v.resize(new_vec_size, std::optional<int>{});
+  ++block_size;
+}
+
+// Shrik the block size by one.
+void OrderedList::shrink_blocks() {
+  size_t nblocks = v.size() / block_size;
+  size_t new_vec_size = nblocks * (block_size - 1);
+  v.resize(new_vec_size);
+  --block_size;
 }
