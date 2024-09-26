@@ -1,5 +1,7 @@
 #include "oblivion/ordered_list.hpp"
+#include <algorithm>
 #include <math.h>
+#include <stdexcept>
 
 using namespace oblivion;
 
@@ -150,5 +152,36 @@ std::optional<int> OrderedList::successor(const int &x) const {
     return v[suc_i.value()].value();
   } else {
     return {};
+  }
+}
+
+void OrderedList::table_doubling() {
+  if (v.size() == 0) {
+    v.resize(1, std::optional<int>{});
+  } else {
+    v.resize(v.size() * 2, std::optional<int>{});
+  }
+}
+
+void OrderedList::table_halving() {
+  if (v.size() == 0) {
+    throw std::runtime_error("Error: can't shirk a vector with size 0.");
+  } else {
+    v.resize(v.size() / 2);
+  }
+}
+
+void OrderedList::distribute(const Block &blk) {
+  size_t n_elements = this->count_elements(blk);
+  size_t step = (blk.size - 1) / (n_elements - 1);
+  size_t i = 0;
+  for (size_t k = blk.begin; k < blk.begin + blk.size; ++k) {
+    if (v[k].has_value()) {
+      size_t target_index = (i * step) + blk.begin;
+      if (target_index != k) {
+        std::swap(v[k], v[target_index]);
+      }
+      ++i;
+    }
   }
 }
