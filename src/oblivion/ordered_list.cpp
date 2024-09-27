@@ -201,3 +201,38 @@ void OrderedList::shrink_blocks() {
   v.resize(new_vec_size);
   --block_size;
 }
+
+OrderedList::Iterator::Iterator(
+    std::vector<std::optional<int>>::const_iterator start,
+    std::vector<std::optional<int>>::const_iterator end)
+    : current{start}, end{end} {
+  advance();
+}
+
+void OrderedList::Iterator::advance() {
+  while (current != end && !current->has_value()) {
+    ++current;
+  }
+}
+
+int OrderedList::Iterator::operator*() const {
+  return current->value(); // safe since advance() has been called
+}
+
+OrderedList::Iterator &OrderedList::Iterator::operator++() {
+  ++current;
+  advance();
+  return *this;
+}
+
+bool OrderedList::Iterator::operator!=(const Iterator &other) const {
+  return current != other.current;
+}
+
+OrderedList::Iterator OrderedList::begin() const {
+  return OrderedList::Iterator(v.begin(), v.end());
+}
+
+OrderedList::Iterator OrderedList::end() const {
+  return OrderedList::Iterator(v.end(), v.end());
+}

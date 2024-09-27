@@ -52,6 +52,26 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const OrderedList &obj);
 
+  // Iterator
+  class Iterator {
+  private:
+    std::vector<std::optional<int>>::const_iterator current;
+    std::vector<std::optional<int>>::const_iterator end;
+
+    void advance();
+
+  public:
+    Iterator(std::vector<std::optional<int>>::const_iterator start,
+             std::vector<std::optional<int>>::const_iterator end);
+
+    int operator*() const;
+    Iterator &operator++();
+    bool operator!=(const Iterator &other) const;
+  };
+
+  Iterator begin() const;
+  Iterator end() const;
+
   // TODO:
   //
   // - Consider using block_size = floor(lg(n)) + 1.
