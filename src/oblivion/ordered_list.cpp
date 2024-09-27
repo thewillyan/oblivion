@@ -1,5 +1,6 @@
 #include "oblivion/ordered_list.hpp"
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 using namespace oblivion;
@@ -244,8 +245,47 @@ std::ostream &operator<<(std::ostream &os, const OrderedList &obj) {
 
   OrderedList::Iterator it = obj.begin();
   os << *it;
+  ++it;
   for (; it != obj.end(); ++it) {
     os << ' ' << *it;
   }
   return os;
+}
+
+void OrderedList::include(int x) {
+  // adjust the block size to keep it in O(lg(n)).
+  size_t new_block_size = static_cast<size_t>(std::log2(nitems + 1)) + 1;
+  // should i expand the block only when the element is difacto included?
+  if (new_block_size > block_size) {
+    expand_blocks();
+    const OrderedList::Block root{0, v.size(), 0};
+    distribute(root);
+    // after here at least one aditional space is placed in the vector,
+    // therefore the element gonna fit in it (table_doubling will not be
+    // called).
+  }
+
+  // verify here if the element gonnna fit
+  if (nitems == v.size()) {
+    // the element does not gonna fit
+    table_doubling();
+    const OrderedList::Block root{0, v.size(), 0};
+    distribute(root);
+    // after here at least one aditional space is placed in the vector,
+    // therefore the element gonna fit in it.
+  }
+
+  // try insert
+  std::optional<size_t> suc_index = suc_idx(x, 0, v.size());
+  if (suc_index.has_value()) {
+    if (*suc_index == 0) {
+
+    } else {
+    }
+  } else {
+  }
+
+  // check density constraints
+
+  ++nitems; // if, AND ONLY IF, everything happens fine.
 }
