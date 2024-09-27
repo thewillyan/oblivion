@@ -236,3 +236,16 @@ OrderedList::Iterator OrderedList::begin() const {
 OrderedList::Iterator OrderedList::end() const {
   return OrderedList::Iterator(v.end(), v.end());
 }
+
+std::ostream &operator<<(std::ostream &os, const OrderedList &obj) {
+  if (obj.size() == 0) {
+    return os;
+  }
+
+  OrderedList::Iterator it = obj.begin();
+  os << *it;
+  for (; it != obj.end(); ++it) {
+    os << ' ' << *it;
+  }
+  return os;
+}

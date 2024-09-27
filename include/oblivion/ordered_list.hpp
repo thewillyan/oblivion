@@ -81,8 +81,6 @@ public:
   // - distribute the elements of the block when density is violated (inclusion
   // and remotion). Rebember to distribute it in a parent block where the
   // violation does not happen. If cant be distributed, double the vector.
-  // - Implement iterator.
-  // - Implement operator<<.
 };
 
 } // namespace oblivion
