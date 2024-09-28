@@ -28,6 +28,8 @@ private:
   double lower_limit(const Block &blk) const;
   double density(const Block &blk) const;
 
+  void fix_density(const Block &blk, double new_density);
+
   std::optional<size_t> binary_search(const int &x, const size_t &begin,
                                       const size_t &end) const;
   std::optional<size_t> suc_idx(const int &x, const size_t &begin,
@@ -41,7 +43,10 @@ private:
   // Shrik the block size by one.
   void shrink_blocks();
 
-  void distribute(const Block &blk);
+  // Distribute the elements of an block in the first sz positions of its
+  // interval.
+  void distribute(const Block &blk, const size_t &sz);
+  void push_way(const size_t &i, const Block &blk);
 
 public:
   OrderedList();
@@ -71,16 +76,6 @@ public:
 
   Iterator begin() const;
   Iterator end() const;
-
-  // TODO:
-  //
-  // - Consider using block_size = floor(lg(n)) + 1.
-  // - Every time we need to update the block size remember to distribute ALL
-  // the elements after it (investigate if there is case that this is
-  // unecessary).
-  // - distribute the elements of the block when density is violated (inclusion
-  // and remotion). Rebember to distribute it in a parent block where the
-  // violation does not happen. If cant be distributed, double the vector.
 };
 
 } // namespace oblivion
