@@ -17,5 +17,11 @@ int main() {
 
   std::cout << list << std::endl;
 
+  list.erase(4);
+  list.erase(1);
+  list.erase(5);
+
+  std::cout << list << std::endl;
+
   return 0;
 }

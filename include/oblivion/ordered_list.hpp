@@ -51,8 +51,8 @@ private:
 public:
   OrderedList();
   size_t size() const;
-  void include(int x); // TODO!
-  void erase(int x);   // TODO!
+  void include(int x);
+  void erase(int x); // TODO!
   std::optional<int> successor(const int &x) const;
 
   friend std::ostream &operator<<(std::ostream &os, const OrderedList &obj);

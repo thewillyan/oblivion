@@ -19,7 +19,7 @@ OrderedList::Block OrderedList::Block::parent() const {
     return OrderedList::Block{begin, size * 2, depth - 1};
   } else {
     // current node is a right child
-    return OrderedList::Block{begin - size, size * 2, depth + 1};
+    return OrderedList::Block{begin - size, size * 2, depth - 1};
   }
 }
 
@@ -229,14 +229,11 @@ void OrderedList::table_halving() {
 
 void OrderedList::distribute(const Block &blk, const size_t &sz) {
   size_t n_elements = (blk.depth == 0) ? nitems : this->count_elements(blk);
-
-  if (n_elements < 2) {
-    return;
-  }
+  size_t step = (n_elements > 2) ? (sz - 1) / (n_elements - 1) : 1;
 
   std::vector<std::optional<int>> tmp_vector(v.size(), std::nullopt);
-  size_t step = (sz - 1) / (n_elements - 1);
   size_t target_index = blk.begin;
+
   for (size_t k = blk.begin; k < blk.begin + blk.size && target_index < sz;
        ++k) {
     if (v[k].has_value()) {
@@ -244,6 +241,11 @@ void OrderedList::distribute(const Block &blk, const size_t &sz) {
       target_index += step;
     }
   }
+
+  for (size_t k = sz; k < v.size(); ++k) {
+    tmp_vector[k] = std::move(v[k]);
+  }
+
   v = std::move(tmp_vector);
 }
 
@@ -418,5 +420,35 @@ void OrderedList::include(int x) {
   v[insert_pos] = x;
 
   ++nitems; // if, AND ONLY IF, everything happens fine.
+}
+
+void OrderedList::erase(int x) {
+  std::optional<size_t> x_idx = binary_search(x, 0, v.size());
+  if (!x_idx.has_value()) {
+    return;
+  }
+
+  // erase item
+  v[*x_idx] = std::nullopt;
+
+  // adjust the block size to keep it in O(lg(n)).
+  size_t new_block_size = static_cast<size_t>(std::log2(nitems - 1)) + 1;
+  if (new_block_size < block_size) {
+    const OrderedList::Block root = {0, v.size(), 0};
+    size_t n_blocks = v.size() / block_size;
+    distribute(root, root.size - n_blocks);
+    shrink_blocks();
+  }
+
+  size_t blk_idx = *x_idx / block_size;
+  OrderedList::Block blk{blk_idx * block_size, block_size, tree_height};
+
+  size_t block_items = count_elements(blk);
+  double new_density = static_cast<double>(block_items - 1) / blk.size;
+
+  if (new_density < lower_limit(blk)) {
+    fix_density(blk, new_density);
+  }
+  --nitems;
 }
 } // namespace oblivion
