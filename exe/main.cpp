@@ -42,7 +42,7 @@ void print_help() {
       "  -h\tPrint this help menssage\n\n"
       "Operations:\n"
       "  INC <int>\tAdds the specified integer\n"
-      "  tREM <int>\tRemoves the specified integer\n"
+      "  REM <int>\tRemoves the specified integer\n"
       "  SUC <int>\tSend to the output the successor of the specified integer\n"
       "  IMP <int>\tSend to the output the contents of the list\n"
       "  EXT <int>\tExit the operation loop\n";
