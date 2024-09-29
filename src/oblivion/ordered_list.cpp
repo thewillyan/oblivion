@@ -153,30 +153,53 @@ std::optional<size_t> OrderedList::binary_search(const int &x,
 
 std::optional<size_t> OrderedList::suc_idx(const int &x, const size_t &begin,
                                            const size_t &end) const {
-  if (begin >= end || end > v.size()) {
-    return std::nullopt; // Invalid range
+  if (begin >= end) {
+    return {};
   }
 
-  // Use binary search to find the first element greater than x
-  auto it = std::upper_bound(
-      v.begin() + begin, v.begin() + end, std::optional<int>(x),
-      [](const std::optional<int> &a, const std::optional<int> &b) {
-        return a.has_value() && (b.has_value() ? *a <= *b : true);
-      });
+  size_t middle = (end + begin) / 2;
+  std::optional<int> y = v[middle];
+  size_t y_idx = middle;
 
-  // Skip over any std::nullopt values and find the index
-  while (it != v.begin() + end && !it->has_value()) {
-    ++it;
+  // from middle -> end
+  if (!y.has_value()) {
+    for (size_t i = middle + 1; i < end; ++i) {
+      if (v[i].has_value()) {
+        y = v[i];
+        y_idx = i;
+        break;
+      }
+    }
   }
 
-  // Return the index or std::nullopt if none exists
-  return (it != v.begin() + end && it->has_value())
-             ? std::optional<size_t>(std::distance(v.begin(), it))
-             : std::nullopt;
+  // from middle -> begin
+  if (!y.has_value()) {
+    for (long int i = static_cast<long int>(middle) - 1;
+         i >= static_cast<long int>(begin); --i) {
+      if (v[i].has_value()) {
+        y = v[i];
+        y_idx = i;
+        break;
+      }
+    }
+  }
+
+  if (!y.has_value()) {
+    return {};
+  } else if (x < y.value()) {
+    std::optional<size_t> left_res = suc_idx(x, begin, y_idx);
+    return (left_res.has_value()) ? left_res : y_idx;
+  } else {
+    // x >= y.value()
+    if (y_idx == end) {
+      return {};
+    }
+    return suc_idx(x, y_idx + 1, end);
+  }
 }
 
 std::optional<int> OrderedList::successor(const int &x) const {
-  std::optional<size_t> suc_i = suc_idx(x, 0, this->size());
+  std::optional<size_t> suc_i = suc_idx(x, 0, v.size());
   if (suc_i.has_value()) {
     return v[suc_i.value()].value();
   } else {
