@@ -33,13 +33,19 @@ void handle_ops(oblivion::OrderedList &list, std::istream &is,
 }
 
 void print_help() {
-  const auto HELP_MSG = "oblivion-cli v0.1.0\n"
-                        "Usage: oblivion-cli [option] [filename]\n\n"
-                        "Options:\n"
-                        "-f\tReceive operations from a file\n"
-                        "-i\tReceive operations iteratively\n"
-                        "-h\tPrint this help menssage\n\n"
-                        "Operations: [INC <int>|REM <int>|SUC <int>|IMP|EXT]\n";
+  const auto HELP_MSG =
+      "oblivion-cli v0.1.0\n"
+      "Usage: oblivion-cli [option] [filename]\n\n"
+      "Options:\n"
+      "  -f\tReceive operations from a file\n"
+      "  -i\tReceive operations iteratively\n"
+      "  -h\tPrint this help menssage\n\n"
+      "Operations:\n"
+      "  INC <int>\tAdds the specified integer\n"
+      "  tREM <int>\tRemoves the specified integer\n"
+      "  SUC <int>\tSend to the output the successor of the specified integer\n"
+      "  IMP <int>\tSend to the output the contents of the list\n"
+      "  EXT <int>\tExit the operation loop\n";
   std::cout << HELP_MSG;
 }
 
