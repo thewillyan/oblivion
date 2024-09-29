@@ -153,49 +153,26 @@ std::optional<size_t> OrderedList::binary_search(const int &x,
 
 std::optional<size_t> OrderedList::suc_idx(const int &x, const size_t &begin,
                                            const size_t &end) const {
-  size_t middle = (end + begin) / 2;
-  std::optional<int> fst_left{};
-  size_t fst_left_idx = end; // start with a 'out of range' index
-
-  std::optional<int> fst_right{};
-  size_t fst_right_idx = end; // start with a 'out of range' index
-
-  // scan from middle + 1 -> end to find fst_right
-  for (size_t i = middle + 1; i < end; ++i) {
-    if (v[i].has_value()) {
-      fst_right = v[i];
-      fst_right_idx = i;
-      break;
-    }
+  if (begin >= end || end > v.size()) {
+    return std::nullopt; // Invalid range
   }
 
-  // scan from middle -> begin to find fst_left
-  for (long int i = static_cast<long int>(middle);
-       i >= static_cast<long int>(begin); --i) {
+  // Use binary search to find the first element greater than x
+  auto it = std::upper_bound(
+      v.begin() + begin, v.begin() + end, std::optional<int>(x),
+      [](const std::optional<int> &a, const std::optional<int> &b) {
+        return a.has_value() && (b.has_value() ? *a <= *b : true);
+      });
 
-    if (v[i].has_value()) {
-      fst_left = v[i];
-      fst_left_idx = i;
-      break;
-    }
+  // Skip over any std::nullopt values and find the index
+  while (it != v.begin() + end && !it->has_value()) {
+    ++it;
   }
 
-  if (fst_left.has_value() && fst_right.has_value()) {
-    if (x >= fst_right.value()) {
-      return suc_idx(x, fst_right_idx, end);
-    } else if (x < fst_left.value()) {
-      return suc_idx(x, begin, fst_left_idx + 1);
-    } else {
-      // fst_left <= x < fst_right
-      return fst_right_idx;
-    }
-  } else if (fst_left.has_value() && x < fst_left.value()) {
-    return fst_left_idx;
-  } else if (fst_right.has_value() && x < fst_right.value()) {
-    return fst_right_idx;
-  } else {
-    return {};
-  }
+  // Return the index or std::nullopt if none exists
+  return (it != v.begin() + end && it->has_value())
+             ? std::optional<size_t>(std::distance(v.begin(), it))
+             : std::nullopt;
 }
 
 std::optional<int> OrderedList::successor(const int &x) const {
@@ -229,7 +206,7 @@ void OrderedList::table_halving() {
 
 void OrderedList::distribute(const Block &blk, const size_t &sz) {
   size_t n_elements = (blk.depth == 0) ? nitems : this->count_elements(blk);
-  size_t step = (n_elements > 2) ? (sz - 1) / (n_elements - 1) : 1;
+  size_t step = (n_elements > 2) ? (sz - 1) / (n_elements - 1) : (sz - 1);
 
   std::vector<std::optional<int>> tmp_vector(v.size(), std::nullopt);
   size_t target_index = blk.begin;
@@ -393,6 +370,7 @@ void OrderedList::include(int x) {
       suc_blk = {suc_blk_idx * block_size, block_size, tree_height};
     }
     inc_block = suc_blk;
+
     if (*suc_index != suc_blk.begin) {
       insert_pos = *suc_index - 1;
     } else {
